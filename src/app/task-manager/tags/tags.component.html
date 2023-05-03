@@ -1,0 +1,19 @@
+<div [formGroup]="tagsFormGroup" class="input-full-width">
+    <mat-form-field  appearance="outline" class="input-full-width">
+        <mat-label>Tags</mat-label>
+        <mat-chip-list #chipList formControlName="tag" aria-label="Tags selection">
+        <mat-chip *ngFor="let tag of tagsFormGroup.controls['tag'].value" (removed)="remove(tag)">
+            {{tag.tagName}}
+            <button matChipRemove>
+                <mat-icon>cancel</mat-icon>
+            </button>
+        </mat-chip>
+        <input placeholder="New tag..." class="input-full-width"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="addOnBlur"
+                (matChipInputTokenEnd)="add($event)">
+        </mat-chip-list>
+        <mat-error *ngIf="tagsFormGroup.controls['tag'].hasError">Task tag/s are required.</mat-error>
+    </mat-form-field>
+</div>

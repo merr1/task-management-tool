@@ -1,0 +1,233 @@
+<div class="container">
+  <div fxLayout="row" fxLayoutAlign="space-between center" class="pt-5">
+    <mat-card
+      class="center"
+      [ngStyle]="{
+        width: '230px',
+        'text-align': 'center',
+        display: 'flex',
+        'flex-direction': 'column',
+        padding: '20px',
+        'align-items': 'center'
+      }"
+      class="bg-primary text-light mr-3"
+    >
+      <mat-card-title><h1>Assigned Tasks</h1></mat-card-title>
+      <div fxLayout="row" fxLayoutALign="center center">
+        <mat-icon class="icon-display ml-5 mr-4">task</mat-icon>
+        <h1 class="ml-3">{{ assignedTasksCount }}</h1>
+      </div>
+    </mat-card>
+    <mat-card
+      class="center"
+      [ngStyle]="{
+        width: '230px',
+        'text-align': 'center',
+        display: 'flex',
+        'flex-direction': 'column',
+        padding: '20px',
+        'align-items': 'center'
+      }"
+      class="bg-accent text-primary mx-3"
+    >
+      <mat-card-title><h1>New Tasks</h1></mat-card-title>
+      <div fxLayout="row" fxLayoutALign="center center">
+        <mat-icon class="icon-display ml-5 mr-4">new_releases</mat-icon>
+        <h1 class="ml-3">{{ newTasksCount }}</h1>
+      </div>
+      <mat-progress-bar
+        class="margin"
+        [ngStyle]="{ 'margin-top': '10px' }"
+        mode="determinate"
+        value="{{ newTasksCountPercentage }}"
+      ></mat-progress-bar>
+    </mat-card>
+    <mat-card
+      class="center"
+      [ngStyle]="{
+        width: '230px',
+        'text-align': 'center',
+        display: 'flex',
+        'flex-direction': 'column',
+        padding: '20px',
+        'align-items': 'center'
+      }"
+      class="bg-secondary text-white mx-3"
+    >
+      <mat-card-title><h1>In Progress Tasks</h1></mat-card-title>
+      <div fxLayout="row" fxLayoutALign="center center">
+        <mat-icon class="icon-display ml-5 mr-4">timers</mat-icon>
+        <h1 class="ml-3">{{ inProgressTasksCount }}</h1>
+      </div>
+      <mat-progress-bar
+        class="margin"
+        mode="determinate"
+        value="{{ inProgressTasksCountPercentage }}"
+      ></mat-progress-bar>
+    </mat-card>
+    <mat-card
+      class="center"
+      [ngStyle]="{
+        width: '230px',
+        'text-align': 'center',
+        display: 'flex',
+        'flex-direction': 'column',
+        padding: '20px',
+        'align-items': 'center'
+      }"
+      class="bg-white text-primary ml-3"
+    >
+      <mat-card-title><h1>Completed Tasks</h1></mat-card-title>
+      <div fxLayout="row" fxLayoutALign="center center">
+        <mat-icon class="icon-display ml-5 mr-4">check_circle</mat-icon>
+        <h1 class="ml-3">{{ completedTasksCount }}</h1>
+      </div>
+      <mat-progress-bar
+        class="margin"
+        mode="determinate"
+        value="{{ completedTasksCountPercentage }}"
+      ></mat-progress-bar>
+    </mat-card>
+  </div>
+  <div class="mt-5" fxLayout="row" fxLayoutAlign="space-between">
+    <h1 class="text-primary">Tasks Manager</h1>
+    <div class="ms-auto">
+      <mat-form-field appearance="legacy" class="mx-4">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchKey" placeholder="Search..." />
+        <button mat-icon-button matSuffix (click)="search()">
+          <mat-icon matSuffix>search</mat-icon>
+        </button>
+      </mat-form-field>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onAdd()"
+        matTooltip="Create Task"
+      >
+        <mat-icon>add_circle</mat-icon> Create Task
+      </button>
+    </div>
+  </div>
+  <div class="mat-elevation-z8 p-2">
+    <table mat-table [dataSource]="dataSource">
+      <!-- Task Name Column -->
+      <ng-container matColumnDef="taskName">
+        <th mat-header-cell *matHeaderCellDef>Task Name</th>
+        <td mat-cell *matCellDef="let task">{{ task.taskName }}</td>
+      </ng-container>
+
+      <!-- Task Description Column -->
+      <ng-container matColumnDef="taskDescription">
+        <th mat-header-cell *matHeaderCellDef>Task Description</th>
+        <td mat-cell *matCellDef="let task">{{ task.taskDescription }}</td>
+      </ng-container>
+
+      <!-- Task Date Created Column -->
+      <ng-container matColumnDef="taskDateCreated">
+        <th mat-header-cell *matHeaderCellDef>Date Created</th>
+        <td mat-cell *matCellDef="let task">
+          {{ task.dateCreated | date: "longDate" }}
+        </td>
+      </ng-container>
+
+      <!-- Task Date Modified Column -->
+      <ng-container matColumnDef="taskDateModified">
+        <th mat-header-cell *matHeaderCellDef>Date Modified</th>
+        <td mat-cell *matCellDef="let task">
+          {{ task.dateModified | date: "longDate" }}
+        </td>
+      </ng-container>
+
+      <!-- Task Date Completed Column -->
+      <ng-container matColumnDef="taskDateFinished">
+        <th mat-header-cell *matHeaderCellDef>Date Finished</th>
+        <td mat-cell *matCellDef="let task">
+          {{ task.dateFinished | date: "longDate" }}
+        </td>
+      </ng-container>
+
+      <!-- Task Tags Column -->
+      <ng-container matColumnDef="tags">
+        <th mat-header-cell *matHeaderCellDef>Tags</th>
+        <td mat-cell *matCellDef="let task">
+          <ng-container *ngFor="let tag of task.tag">
+            <span class="badge bg-accent text-primary">{{ tag.tagName }}</span>
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <!-- Task Status Column -->
+      <ng-container matColumnDef="taskStatus">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td
+          mat-cell
+          *matCellDef="let task"
+          [ngStyle]="{ 'text-align': 'center', margin: '5px' }"
+        >
+          <div *ngIf="task.status == 0" matTooltip="New" aria-label="new">
+            <mat-icon [ngStyle]="{ color: 'blue' }">new_releases</mat-icon>
+          </div>
+          <div
+            *ngIf="task.status == 1"
+            matTooltip="In Progress"
+            aria-label="in progress"
+          >
+            <mat-icon [ngStyle]="{ color: 'orange' }">timer</mat-icon>
+          </div>
+          <div
+            *ngIf="task.status == 2"
+            matTooltip="Completed"
+            aria-label="completed"
+          >
+            <mat-icon [ngStyle]="{ color: 'green' }">check_circle</mat-icon>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let task">
+          <button
+            mat-icon-button
+            color="accent"
+            class="bg-accent text-primary mx-2"
+            matTooltip="Edit Task"
+            (click)="onEdit(task.taskId)"
+            aria-label="edit"
+          >
+            <mat-icon>mode_edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            *ngIf="task.status != 2"
+            color="warn"
+            class="bg-accent"
+            matTooltip="Delete Task"
+            (click)="openDialogConfirmation(task.taskId)"
+            aria-label="delete"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="8" [ngStyle]="{ 'text-align': 'center' }">
+          No data found
+        </td>
+      </tr>
+    </table>
+    <mat-paginator
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      showFirstLastButtons
+      aria-label="Select page of tasks"
+    >
+    </mat-paginator>
+  </div>
+</div>
